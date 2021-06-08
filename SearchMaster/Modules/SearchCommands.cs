@@ -1,6 +1,5 @@
 using Discord;
 using Discord.Commands;
-using System;
 using System.Threading.Tasks;
 
 namespace SearchMaster.Modules.Searches
@@ -23,16 +22,13 @@ namespace SearchMaster.Modules.Searches
                 .AddField(":cloud: Cloud Coverage", e.clouds.all + "%")
                 .AddField(":sweat: Humidity", e.main.humidity + "%")
                 .AddField(":dash: Wind Speed", e.wind.speed + "m/s")
-                .AddField(":thermometer: Low / High", e.main.temp_min + " ° " + "/" + e.main.temp_max + " ° ");
-            try
+                .AddField(":thermometer: Low / High", new Conversions().KelvinToFehrenheit(e.main.temp_min) + " ° " + "/" + new Conversions().KelvinToFehrenheit(e.main.temp_max) + " ° ");
+            await Context.Channel.SendMessageAsync(embed: embed.Build());
+            if (e.cod == 404)
             {
-                await Context.Channel.SendMessageAsync(embed: embed.Build());
-            }
-            catch (Exception err)
-            {
-                await Context.Channel.SendMessageAsync(await new Errors().ErrorReplyCityNotFound());
-                Console.Write(err.ToString());
-
+                var Eembed = new EmbedBuilder()
+                    .WithDescription("City not found.");
+                await Context.Channel.SendMessageAsync(embed: Eembed.Build());
             }
         }
     }
